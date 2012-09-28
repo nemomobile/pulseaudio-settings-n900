@@ -1,0 +1,83 @@
+#!/usr/bin/pulseaudio -nF
+.fail
+
+### Automatically restore the volume of streams and devices
+load-module module-device-restore
+load-module module-card-restore
+
+### Automatically load driver modules for Bluetooth hardware
+.ifexists module-bluetooth-discover.so
+load-module module-bluetooth-discover
+.endif
+
+load-module module-native-protocol-unix
+
+### Automatically suspend sinks/sources that become idle for too long
+load-module module-suspend-on-idle timeout=5
+
+### Automatically restore the default sink/source when changed by the user during runtime
+load-module module-default-device-restore
+
+### Publish connection data in the X11 root window
+.ifexists module-x11-publish.so
+.nofail
+load-module module-x11-publish
+.fail
+.endif
+
+### Make sure we always have a sink around, even if it is a null sink.
+load-module module-always-sink
+
+### Default static drivers
+load-module module-alsa-sink-old sink_name=sink.hw0 device=hw:0  rate=48000 fragment_size=19200 fragments=4 alt_fragment_size=1920 alt_fragments=4 paths=nokia-rx51-output-ihf,nokia-rx51-output-earpiece,nokia-rx51-output-headset,nokia-rx51-output-fmtx,nokia-rx51-output-ihfandfmtx,nokia-rx51-output-ihfandheadset
+
+update-sink-proplist sink.hw0 module-suspend-on-idle.timeout=1
+set-sink-volume sink.hw0 0
+
+load-module module-alsa-source-old source_name=source.hw0 device=hw:0 rate=48000 fragment_size=1920 fragments=4 alt_fragment_size=960 alt_fragments=4 paths=nokia-rx51-input-microphone,nokia-rx51-input-headset
+
+update-source-proplist source.hw0 module-suspend-on-idle.timeout=1
+
+### Nokia audio enhancements modules
+.ifexists module-meego-voice.so
+load-module module-meego-voice master_sink=sink.hw0 master_source=source.hw0
+.endif
+
+.ifexists module-meego-music.so
+load-module module-meego-music sink_name=sink.music master_sink=sink.voice.raw
+.endif
+
+.ifexists module-meego-record.so
+load-module module-meego-record source_name=source.record master_source=source.voice.raw
+.endif
+
+### nokiamodem_backend
+.ifexists /dev/cmt_speech
+load-module module-meego-cmtspeech source=source.voice sink=sink.voice dbus_type="system"
+.endif
+
+### Extra modules
+.ifexists module-nokia-parameters.so
+load-module module-nokia-parameters
+.endif
+.ifexists module-nokia-algorithms.so
+load-module module-nokia-algorithms
+.endif
+
+### module for volume API
+.ifexists module-meego-mainvolume.so
+load-module module-meego-mainvolume.so
+.endif
+
+### policy 
+.ifexists module-policy-enforcement.so
+.nofail
+load-module module-policy-enforcement
+.fail
+.endif
+
+### Make some devices default
+set-default-sink sink.hw0
+set-default-source source.hw0
+set-sink-volume sink.hw0 0x10000
+set-source-volume source.hw0 0x10000
