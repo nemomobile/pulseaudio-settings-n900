@@ -1,83 +1,37 @@
 #!/usr/bin/pulseaudio -nF
 .fail
 
-### Automatically restore the volume of streams and devices
-load-module module-device-restore
-load-module module-card-restore
-
-### Automatically load driver modules for Bluetooth hardware
-.ifexists module-bluetooth-discover.so
+# Hardware adaptation stuff
+# FIXME: It would be a bit nicer to have the sink/source name and the rate
+# configuration in the profile set configuration file, but there's no support
+# for that at the moment. Or at least the rate should be in the profile set
+# config - the best situation would be if the UI parts didn't depend on the
+# sink/source names, in which case the sink and source names wouldn't need to
+# be configured anywhere at all.
+load-module module-alsa-card device_id=RX51 profile_set=nokia-rx51.conf sink_name=sink.hw0 source_name=source.hw0 rate=48000
 load-module module-bluetooth-discover
-.endif
 
-load-module module-native-protocol-unix
-
-### Automatically suspend sinks/sources that become idle for too long
-load-module module-suspend-on-idle timeout=5
-
-### Automatically restore the default sink/source when changed by the user during runtime
-load-module module-default-device-restore
-
-### Publish connection data in the X11 root window
-.ifexists module-x11-publish.so
-.nofail
-load-module module-x11-publish
-.fail
-.endif
-
-### Make sure we always have a sink around, even if it is a null sink.
-load-module module-always-sink
-
-### Default static drivers
-load-module module-alsa-sink-old sink_name=sink.hw0 device=hw:0  rate=48000 fragment_size=19200 fragments=4 alt_fragment_size=1920 alt_fragments=4 paths=nokia-rx51-output-ihf,nokia-rx51-output-earpiece,nokia-rx51-output-headset,nokia-rx51-output-fmtx,nokia-rx51-output-ihfandfmtx,nokia-rx51-output-ihfandheadset
-
-update-sink-proplist sink.hw0 module-suspend-on-idle.timeout=1
-set-sink-volume sink.hw0 0
-
-load-module module-alsa-source-old source_name=source.hw0 device=hw:0 rate=48000 fragment_size=1920 fragments=4 alt_fragment_size=960 alt_fragments=4 paths=nokia-rx51-input-microphone,nokia-rx51-input-headset
-
-update-source-proplist source.hw0 module-suspend-on-idle.timeout=1
-
-### Nokia audio enhancements modules
-.ifexists module-meego-voice.so
-load-module module-meego-voice master_sink=sink.hw0 master_source=source.hw0
-.endif
-
-.ifexists module-meego-music.so
-load-module module-meego-music sink_name=sink.music master_sink=sink.voice.raw
-.endif
-
-.ifexists module-meego-record.so
-load-module module-meego-record source_name=source.record master_source=source.voice.raw
-.endif
-
-### nokiamodem_backend
-.ifexists /dev/cmt_speech
-load-module module-meego-cmtspeech source=source.voice sink=sink.voice dbus_type="system"
-.endif
-
-### Extra modules
-.ifexists module-nokia-parameters.so
-load-module module-nokia-parameters
-.endif
-.ifexists module-nokia-algorithms.so
-load-module module-nokia-algorithms
-.endif
-
-### module for volume API
-.ifexists module-meego-mainvolume.so
-load-module module-meego-mainvolume.so
-.endif
-
-### policy 
-.ifexists module-policy-enforcement.so
-.nofail
+# UI/policy stuff
+load-module module-null-sink sink_name=sink.null rate=48000
+load-module module-stream-restore-nemo fallback_table=/etc/pulse/x-maemo-stream-restore-nemo.table route_table=/etc/pulse/x-maemo-route.table restore_muted=no restore_device=no
 load-module module-policy-enforcement
-.fail
-.endif
+load-module module-meego-parameters
+load-module module-meego-voice master_sink=sink.hw0 master_source=source.hw0
+load-module module-meego-music sink_name=sink.music master_sink=sink.voice.raw
+load-module module-meego-record source_name=source.record master_source=source.voice.raw
+load-module module-meego-mainvolume
 
-### Make some devices default
-set-default-sink sink.hw0
-set-default-source source.hw0
-set-sink-volume sink.hw0 0x10000
-set-source-volume source.hw0 0x10000
+# Some more hardware adaptation stuff...
+# The parameters for module-meego-cmtspeech appear to depend on
+# module-meego-voice, so I guess module-meego-cmtspeech needs to be loaded
+# after module-meego-voice. It would be nicer if there would be no direct
+# dependencies between the hardware adaptation and the UI, so FIXME. (The plan
+# is to move to separate and independent configuration files for hardware
+# adaptation and UI at some point.) I haven't actually tried what happens if
+# module-meego-cmtspeech is loaded before module-meego-voice, it may even
+# work... So, this may actually be easy to fix, don't be afraid to try...
+load-module module-meego-cmtspeech source=source.voice sink=sink.voice dbus_type=system
+
+# Common stuff
+load-module module-native-protocol-unix
+load-module module-suspend-on-idle
