@@ -2,13 +2,21 @@
 .fail
 
 # Hardware adaptation stuff
+#
 # FIXME: It would be a bit nicer to have the sink/source name and the rate
 # configuration in the profile set configuration file, but there's no support
 # for that at the moment. Or at least the rate should be in the profile set
 # config - the best situation would be if the UI parts didn't depend on the
 # sink/source names, in which case the sink and source names wouldn't need to
 # be configured anywhere at all.
-load-module module-alsa-card device_id=RX51 profile_set=nokia-rx51.conf sink_name=sink.hw0 source_name=source.hw0 rate=48000
+#
+# FIXME: It would be really nice to not have tsched=0, but currently
+# module-meego-voice seems to rely on a specific fragment size, at least for
+# call uplink. That should be fixable (probably not easy, though). It would be
+# helpful if it was possible to disable tsched only for the source, if it's not
+# necessary for the sink. There's no support for that in the profile set
+# configuration file, but adding that should be quite easy.
+load-module module-alsa-card device_id=RX51 profile_set=nokia-rx51.conf sink_name=sink.hw0 source_name=source.hw0 rate=48000 tsched=0 fragment_size=960 fragments=4
 load-module module-bluetooth-discover
 
 # UI/policy stuff
