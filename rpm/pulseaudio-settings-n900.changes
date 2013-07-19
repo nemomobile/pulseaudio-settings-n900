@@ -1,0 +1,31 @@
+* Wed Jan 16 2013 Juho Hamalainen <juho.hamalainen@tieto.com> - 2.1.2
+- Update settings version.
+- Update package dependencies.
+
+* Mon Oct 29 2012 Tanu Kaskinen <tanu.kaskinen@jollamobile.com> - 2.1.1
+- Update to 2.1.1.
+- Add "Obsoletes" for the closed Nokia packages, so that the package
+  manager won't complain when upgrading pulseaudio from 0.9.22 to 2.1.
+
+* Mon Oct 15 2012 Tanu Kaskinen <tanu.kaskinen@jollamobile.com> - 2.1.0
+- Package 2.1.0 from the new upstream at
+  https://github.com/nemomobile/pulseaudio-settings-n900
+
+* Thu Aug 11 2011  Kalle Lampila <kalle.lampila@cybercom.com> - 0.1.4
+- Increasing IHF (normal internal handset free) audio's max volume. (BMC#18569)
+
+* Fri Mar 18 2011 Sami Sirkia <sami.sirkia@cybercom.com> - 0.1.3
+- Added PulseAudio config /etc/pulse/arm_nokia_rx_51_board.pa
+  Support for configuring by boardname in PulseAudio is asked in BMC#6728.
+  This change does not depend on the PulseAudio feature.
+  This will take preference over /home/meego/.pulse/default.pa (in n900).
+
+* Fri Feb 25 2011 Kalle Lampila <kalle.lampila@cybercom.com> - 0.1.2
+- Fixed mixer names after changes kernel update to 2.5.37 (BMC#8103)
+
+* Fri Nov 12 2010 Kalle Lampila <kalle.lampila@cybercom.com> - 0.1.1
+- Updated alsamixer settings (part of FEA#6701)
+- Excluded non used table files
+
+* Tue Oct 5 2010 Markus Lehtonen <markus.lehtonen@nokia.com> - 0.1.0
+- First version.
