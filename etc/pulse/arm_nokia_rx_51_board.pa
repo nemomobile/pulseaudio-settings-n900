@@ -23,12 +23,10 @@ load-module module-bluetooth-discover
 load-module module-null-sink sink_name=sink.null rate=48000
 set-sink-volume sink.hw0 0x10000
 set-source-volume source.hw0 0x10000
-load-module module-stream-restore-nemo fallback_table=/etc/pulse/x-maemo-stream-restore-nemo.table route_table=/etc/pulse/x-maemo-route.table restore_muted=no restore_device=no use_voice=yes
+# Load parameters module before stream-restore-nemo, since stream-restore-nemo needs parameters for mode changes.
+load-module module-meego-parameters cache=1 use_voice=no
+load-module module-stream-restore-nemo fallback_table=/etc/pulse/x-maemo-stream-restore-nemo.table route_table=/etc/pulse/x-maemo-route.table restore_muted=no restore_device=no use_voice=no
 load-module module-policy-enforcement
-# Disable parameters module loading. Parameters module fails to load if no parameter
-# sets exist. Until parameter sets are written for N900, don't try to load parameters
-# module.
-#load-module module-meego-parameters
 load-module module-meego-voice master_sink=sink.hw0 master_source=source.hw0
 load-module module-meego-music sink_name=sink.music master_sink=sink.voice.raw
 load-module module-meego-record source_name=source.record master_source=source.voice.raw
