@@ -1,6 +1,6 @@
 Name: pulseaudio-settings-n900
 Summary: PulseAudio settings for Nokia N900
-Version: 2.1.3
+Version: 4.0.4
 Release: 1
 Group: System/Libraries
 License: GPLv2
@@ -16,15 +16,15 @@ Configure: none
 Builder: none
 
 Requires:
-    - pulseaudio >= 2.1
-    - pulseaudio-modules-nemo-music >= 2.1.4
-    - pulseaudio-modules-nemo-record >= 2.1.4
-    - pulseaudio-modules-nemo-stream-restore >= 2.1.4
-    - pulseaudio-modules-nemo-voice >= 2.1.4
-    - pulseaudio-module-cmtspeech-n9xx >= 2.1.3
+    - pulseaudio >= 4.0
+    - pulseaudio-modules-nemo-music >= 4.0.4
+    - pulseaudio-modules-nemo-record >= 4.0.4
+    - pulseaudio-modules-nemo-stream-restore >= 4.0.4
+    - pulseaudio-modules-nemo-voice >= 4.0.4
+    - pulseaudio-module-cmtspeech-n9xx >= 4.0.3
     - pulseaudio-policy-enforcement
 
-# The closed Nokia modules are not compatible with pulseaudio 2.1. Obsoleting
+# The closed Nokia modules are not compatible with pulseaudio 2.1/4.0. Obsoleting
 # them here in the settings package should make the upgrade from 0.9.22 to 2.1
 # go smoothly without complaints from the package manager.
 Obsoletes:
